@@ -54,13 +54,16 @@ app.post('/api/Signature', (req, res)=>{
     try{
         const dsData = req.body
         const number = Math.random()*100000 
+
+        const pars = parseInt(number) 
         
         //Datos obligatorios de wompi 
-        const key = "pub_test_nhoUd3AyHBCMEbX7W3nq8SSAGr3g622b";
+        const key = "test_integrity_EuMXLUjF7hmJOsUUZ7uFFtcUVXzOxdIa"; 
         const currency = "COP"; 
-        const reference = "BF" + number + fechaFormateada + horaFormateada; 
+        const reference = "BF" + number + fechaFormateada + horaFormateada;  
         const amount = dsData.amount * 100; 
         const params = reference + amount + currency + key;  
+        const public_key = "pub_test_nhoUd3AyHBCMEbX7W3nq8SSAGr3g622b"; 
 
         console.log(params) 
         
@@ -73,7 +76,8 @@ app.post('/api/Signature', (req, res)=>{
                 currency : currency,
                 reference : reference,
                 amount: amount, 
-                signature : signature
+                signature : signature,
+                public_key:public_key
             }
         ]
     
