@@ -109,7 +109,7 @@ app.post('/api/res/nidum', async (req, res)=>{
     wompi.push(respuesta) 
     res.sendStatus(200)
 
-    if(response.status === 'APROVED'){
+    if(response.status === 'APPROVED'){
 
         const Ref = response.reference
 
@@ -182,7 +182,7 @@ app.post('/api/res/nidum', async (req, res)=>{
         console.log(factura) 
         axios.post(URL_FACTURACION, factura)  
         .then((res) =>{
-            console.log(res)   
+            console.log(res)    
             console.log('La factura fue creada') 
         }) 
         .catch((error)=>{
