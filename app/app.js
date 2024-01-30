@@ -23,26 +23,26 @@ var horaFormateada = (hora < 10 ? '0' : '') + hora + ':' + (minutos < 10 ? '0' :
 const app = express();
 
 //lista para el manejo y sonsumo de la api 
-const whiteLIst = [
-    "https://da94-190-0-247-117.ngrok-free.app/api/Signature", 
-    "http://127.0.0.1:3000" ,
-    "http://localhost:4000"
-]; 
+// const whiteLIst = [
+//     "https://da94-190-0-247-117.ngrok-free.app/api/Signature", 
+//     "http://127.0.0.1:3000" ,
+//     "http://localhost:4000"
+// ]; 
 
-//Funcion para dar o degenar el permiso al consumo de la api 
-const cosrOptions = {
-    origin: (origin, callback)=>{
-        if(whiteLIst.indexOf(origin) !== -1 || !origin){
-            callback(null, true ); 
-        }
-        else{
-            callback(new Error('NOT allowed by CORS'))
-        }
-    }, 
-}; 
-app.use(cors(cosrOptions)) 
+// //Funcion para dar o degenar el permiso al consumo de la api 
+// const cosrOptions = {
+//     origin: (origin, callback)=>{
+//         if(whiteLIst.indexOf(origin) !== -1 || !origin){
+//             callback(null, true ); 
+//         }
+//         else{
+//             callback(new Error('NOT allowed by CORS'))
+//         }
+//     }, 
+// }; 
+// app.use(cors(cosrOptions)) 
 
-app.use(cors()); 
+app.use(cors());  
 
 
 let DATA = [] 
@@ -60,7 +60,7 @@ app.post('/api/Signature', (req, res)=>{
         //Datos obligatorios de wompi 
         const key = "test_integrity_EuMXLUjF7hmJOsUUZ7uFFtcUVXzOxdIa"; 
         const currency = "COP"; 
-        const reference = "BF" + number + fechaFormateada + horaFormateada;  
+        const reference = "BFS" + number + fechaFormateada + horaFormateada + dsData.ID; 
         const amount = dsData.amount * 100; 
         const params = reference + amount + currency + key;  
         const public_key = "pub_test_nhoUd3AyHBCMEbX7W3nq8SSAGr3g622b"; 
@@ -98,33 +98,32 @@ app.post('/api/res/nidum', (req, res)=>{
     const respuesta = 
         {
             amount_in_cents: response.amount_in_cents, 
-            reference: "BF" + response.reference, 
-            currency: response.currency, 
+            reference: response.reference, 
+            Currency: response.Currency, 
             payment_method_type: response.payment_method_type, 
             status: response.status, 
-            checksum: response.checksum
+            checksum: response.checksum, 
         }
     
     wompi.push(respuesta) 
     res.sendStatus(200) 
 
-    respuesta.forEach(data =>{
-        estado = data.status 
+    if(response.status == 'APROVED'){
+        console.log('Estado aprovado')
+    }
 
-        if(estado == 'Aceptado'){
+    console.log(wompi) 
 
-            URL_BERRY = "https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/Pedidos_Berry_Fields"
-        
-            const post = {
-                headers: {
-                    'Content-Type' : 'Application/json'
-                }, 
-                body: JSON.stringify(respuesta) 
-            }
-        
-            axios.post(URL_BERRY, post)
-        }
-    })
+
+    // if(response.status == "Aceptado"){
+
+    //     URL_BERRY = "https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/Pedidos_Berry_Fields"
+    
+    //     axios.post(URL_BERRY, respuesta) 
+    // }
+    // else{
+    //     console.log('No se creo nada en berry')
+    // }
 
     //procesamiento de los datos para luego mandarlos a zoho y alli crear la factura 
 })
