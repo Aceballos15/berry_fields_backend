@@ -63,9 +63,9 @@ app.post('/api/Signature', (req, res)=>{
         const reference = "BFS" + number + fechaFormateada + horaFormateada + dsData.ID; 
         const amount = dsData.amount * 100; 
         const params = reference + amount + currency + key;  
-        const public_key = process.env.KEY_PUBLIC; 
+        const public_key = process.env.PUBLIC_KEY; 
 
-        console.log(params) 
+        console.log(params)
         
         //utilizar sha256 para encriptar los datos y hacer la signature 
         const signature = sha(params)
