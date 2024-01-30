@@ -58,12 +58,12 @@ app.post('/api/Signature', (req, res)=>{
         const pars = parseInt(number) 
         
         //Datos obligatorios de wompi 
-        const key = "test_integrity_EuMXLUjF7hmJOsUUZ7uFFtcUVXzOxdIa";  
+        const key = process.env.KEY; 
         const currency = "COP"; 
         const reference = "BFS" + number + fechaFormateada + horaFormateada + dsData.ID; 
         const amount = dsData.amount * 100; 
         const params = reference + amount + currency + key;  
-        const public_key = "pub_test_nhoUd3AyHBCMEbX7W3nq8SSAGr3g622b";
+        const public_key = process.env.KEY_PUBLIC; 
 
         console.log(params) 
         
