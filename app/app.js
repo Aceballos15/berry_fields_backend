@@ -189,6 +189,9 @@ app.post('/api/res/nidum', async (req, res)=>{
             console.error(error)
         }) 
     }
+    else{
+        console.log('No entro al if') 
+    }
 })
 
 let wompi = []
