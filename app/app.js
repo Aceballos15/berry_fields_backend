@@ -111,10 +111,7 @@ app.post('/api/res/nidum', async(req, res)=>{
     
     if(response.data.transaction.status === 'APPROVED'){
 
-        const Ref = response.data.reference 
-
-        console.log(response.data)
-        console.log(Ref) 
+        const Ref = response.data.transaction.reference 
 
         URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"` 
 
