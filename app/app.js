@@ -191,6 +191,7 @@ app.post('/api/res/nidum', async (req, res)=>{
     }
     else{
         console.log('No entro al if') 
+        console.log(response) 
     }
 })
 
