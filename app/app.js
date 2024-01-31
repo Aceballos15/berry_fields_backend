@@ -128,6 +128,7 @@ app.post('/api/res/nidum', async(req, res)=>{
         let Fecha = [] 
         let ID = 0
         let Total = [] 
+        let Direccion = [] 
 
         productos = JSON.parse(DataBerry[0].Productos)
 
@@ -137,6 +138,7 @@ app.post('/api/res/nidum', async(req, res)=>{
             ID = datos.ID1  
             Fecha =  datos.Fecha
             Total = datos.Total 
+            Direccion = datos.Direccion
         })
 
 
@@ -170,7 +172,7 @@ app.post('/api/res/nidum', async(req, res)=>{
             Iva_Total : 0, 
             RT_Pago_Digital: 0, 
             Otras_Deducciones: 0, 
-            Observacion: " ", 
+            Observacion: `${Direccion}`,  
             Cargo_por_ventas: 0, 
             Rete_Iva: 0, 
             Rete_Fuente: 0, 
