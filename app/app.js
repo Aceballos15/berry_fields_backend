@@ -1,6 +1,5 @@
 //modulos requeridos 
 
-const { error, Console } = require('console');
 const express = require('express')
 const sha = require('js-sha256').sha256; 
 const axios = require('axios') 
@@ -22,28 +21,7 @@ var horaFormateada = (hora < 10 ? '0' : '') + hora + ':' + (minutos < 10 ? '0' :
 //asignacion de express a la app 
 const app = express();
 
-//lista para el manejo y sonsumo de la api 
-// const whiteLIst = [
-//     "https://da94-190-0-247-117.ngrok-free.app/api/Signature", 
-//     "http://127.0.0.1:3000" ,
-//     "http://localhost:4000"
-// ]; 
-
-// //Funcion para dar o degenar el permiso al consumo de la api 
-// const cosrOptions = {
-//     origin: (origin, callback)=>{
-//         if(whiteLIst.indexOf(origin) !== -1 || !origin){
-//             callback(null, true ); 
-//         }
-//         else{
-//             callback(new Error('NOT allowed by CORS'))
-//         }
-//     }, 
-// }; 
-// app.use(cors(cosrOptions)) 
-
 app.use(cors());  
-
 
 let DATA = [] 
 
@@ -54,13 +32,11 @@ app.post('/api/Signature', (req, res)=>{
     try{
         const dsData = req.body
         const number = Math.random()*100000 
-
-        const pars = parseInt(number) 
         
         //Datos obligatorios de wompi 
         const key = process.env.KEY; 
-        const currency = "COP"; 
-        const reference = "BFS" + number + fechaFormateada + horaFormateada + dsData.ID; 
+        const currency = "COP";
+        const reference = `BFS-${number} ${fechaFormateada} ${horaFormateada} ${dsData.ID}` 
         const amount = dsData.amount * 100; 
         const params = reference + amount + currency + key;  
         const public_key = process.env.PUBLIC_KEY; 
