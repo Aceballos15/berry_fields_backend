@@ -36,7 +36,7 @@ app.post('/api/Signature', (req, res)=>{
         //Datos obligatorios de wompi 
         const key = process.env.KEY; 
         const currency = "COP";
-        const reference = `BFS-${number} ${fechaFormateada} ${horaFormateada} ${dsData.ID}` 
+        const reference = `bfs-${number} ${fechaFormateada} ${horaFormateada} ${dsData.ID}`  
         const amount = dsData.amount * 100; 
         const params = reference + amount + currency + key;  
         const public_key = process.env.PUBLIC_KEY; 
