@@ -124,19 +124,20 @@ app.post('/api/res/nidum', async(req, res)=>{
         .catch((error) => console.error(error)) 
 
         let Product = [] 
-        var productos = []
+        let productos = [] 
         let Fecha = [] 
         let ID = 0
         let Total = [] 
 
         productos = JSON.parse(DataBerry[0].Productos)
 
+        console.log(productos) 
+
         DataBerry.forEach(datos =>{
             ID = datos.ID1  
             Fecha =  datos.Fecha
             Total = datos.Total 
         })
-
 
 
         productos.forEach(datos =>{
