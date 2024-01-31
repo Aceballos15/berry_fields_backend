@@ -94,7 +94,7 @@ app.post('/api/Signature', (req, res)=>{
 let DataBerry = []
 
 //Api para nidum y traer los datos que devuelve wompi 
-app.post('/api/res/nidum', async (req, res)=>{
+app.post('/api/res/nidum', async(req, res)=>{
     const response =  req.body
     const respuesta = 
         {
@@ -109,7 +109,7 @@ app.post('/api/res/nidum', async (req, res)=>{
     wompi.push(respuesta) 
     res.sendStatus(200)
 
-    response.forEach(datos => {
+    response.forEach(async(datos) => {
         const Status = datos.data.transaction.status  
         console.log(Status)
         if(Status === 'APPROVED'){
