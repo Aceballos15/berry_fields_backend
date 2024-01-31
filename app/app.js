@@ -67,6 +67,8 @@ app.post('/api/Signature', (req, res)=>{
     }
 })
 
+let wompi = [] 
+
 let DataBerry = []
 
 //Api para nidum y traer los datos que devuelve wompi 
@@ -161,27 +163,17 @@ app.post('/api/res/nidum', async(req, res)=>{
         console.log(factura) 
         axios.post(URL_FACTURACION, factura)  
         .then((res) =>{
-            console.log(res.data)    
-            console.log('La factura fue creada') 
+            console.log('La Factura fue creada correctamente',res.data)     
         }) 
         .catch((error)=>{
             console.error(error)
         }) 
     }
     else{
-        console.log(response.data.transaction.status)   
         console.log(response.data) 
     
     }
 })
-
-let wompi = []
-
-//Api para mandar la info a los servidores de la whitelist 
-app.get('/api/simonSignature_data', (req, res)=>{
-
-    res.send(DATA)
-}) 
 
 //Escuchar el puerto en el que se van a ejecutar los datos
 const port = process.env.port || 4000; 
