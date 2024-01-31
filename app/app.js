@@ -129,6 +129,8 @@ app.post('/api/res/nidum', async(req, res)=>{
         let ID = 0
         let Total = [] 
 
+        console.log(DataBerry) 
+
         productos = JSON.parse(DataBerry[0].Productos)
 
         console.log(productos) 
