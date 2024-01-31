@@ -109,90 +109,96 @@ app.post('/api/res/nidum', async (req, res)=>{
     wompi.push(respuesta) 
     res.sendStatus(200)
 
-    if(response.status === 'APPROVED'){
-
-        const Ref = response.reference
-
-        URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"` 
-
-        URL_FACTURACION = "https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/Remision" 
-
-        await axios.get(URL_BERRY_GET)
-        .then((res)=>{
-            DataBerry = res.data  
-        })
-        .catch((error) => console.error(error)) 
-
-        let Product = [] 
-        var productos = []
-        let Fecha = [] 
-        let ID = 0
-        let Total = [] 
-
-        productos = JSON.parse(DataBerry[0].Productos)
-
-        DataBerry.forEach(datos =>{
-            ID = datos.ID1  
-            Fecha =  datos.Fecha
-            Total = datos.Total 
-        })
-
-
-
-        productos.forEach(datos =>{
-            const product = {
-                Producto : datos['id'],  
-                Cantidad: datos['quantity'], 
-                Precio: datos['price'],  
-                IVA: 0, 
-                Total: datos.quantity * datos.price, 
-                Utilidad: 0, 
-                Cargo_por_venta: 0, 
-                Asesor: "1889220000132110360"
+    response.forEach(datos => {
+        const Status = datos.data.transaction.status  
+        console.log(Status)
+        if(Status === 'APPROVED'){
+    
+            const Ref = response.reference
+    
+            URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"` 
+    
+            URL_FACTURACION = "https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/Remision" 
+    
+            await axios.get(URL_BERRY_GET)
+            .then((res)=>{
+                DataBerry = res.data  
+            })
+            .catch((error) => console.error(error)) 
+    
+            let Product = [] 
+            var productos = []
+            let Fecha = [] 
+            let ID = 0
+            let Total = [] 
+    
+            productos = JSON.parse(DataBerry[0].Productos)
+    
+            DataBerry.forEach(datos =>{
+                ID = datos.ID1  
+                Fecha =  datos.Fecha
+                Total = datos.Total 
+            })
+    
+    
+    
+            productos.forEach(datos =>{
+                const product = {
+                    Producto : datos['id'],  
+                    Cantidad: datos['quantity'], 
+                    Precio: datos['price'],  
+                    IVA: 0, 
+                    Total: datos.quantity * datos.price, 
+                    Utilidad: 0, 
+                    Cargo_por_venta: 0, 
+                    Asesor: "1889220000132110360"
+                }
+    
+                Product.push(product)  
+            })
+    
+            const factura = {
+                Cliente: ID, 
+                Zona : "1889220000130974457", 
+                Tipo_Factura: "Contado", 
+                Aseso: "1889220000132110360", 
+                Financieras : "1889220000132747937", 
+                Bodega: "1889220000131977652", 
+                Redes2: "No", 
+                Fecha: Fecha, 
+                Vendedor: "1889220000131684707", 
+                Subtotal: Total,
+                Total: Total,
+                Iva_Total : 0, 
+                RT_Pago_Digital: 0, 
+                Otras_Deducciones: 0, 
+                Observacion: " ", 
+                Cargo_por_ventas: 0, 
+                Rete_Iva: 0, 
+                Rete_Fuente: 0, 
+                Rete_Ica: 0, 
+                Envio : 0,
+                Cuenta: "1889220000132525460",
+                Item: Product
             }
-
-            Product.push(product)  
-        })
-
-        const factura = {
-            Cliente: ID, 
-            Zona : "1889220000130974457", 
-            Tipo_Factura: "Contado", 
-            Aseso: "1889220000132110360", 
-            Financieras : "1889220000132747937", 
-            Bodega: "1889220000131977652", 
-            Redes2: "No", 
-            Fecha: Fecha, 
-            Vendedor: "1889220000131684707", 
-            Subtotal: Total,
-            Total: Total,
-            Iva_Total : 0, 
-            RT_Pago_Digital: 0, 
-            Otras_Deducciones: 0, 
-            Observacion: " ", 
-            Cargo_por_ventas: 0, 
-            Rete_Iva: 0, 
-            Rete_Fuente: 0, 
-            Rete_Ica: 0, 
-            Envio : 0,
-            Cuenta: "1889220000132525460",
-            Item: Product
+    
+            console.log(factura) 
+            axios.post(URL_FACTURACION, factura)  
+            .then((res) =>{
+                console.log(res.data)    
+                console.log('La factura fue creada') 
+            }) 
+            .catch((error)=>{
+                console.error(error)
+            }) 
         }
+        else{
+            console.log('No entro al if') 
+            console.log(Status) 
+            console.log(datos.data.transaction.status) 
+        }
+    })
 
-        console.log(factura) 
-        axios.post(URL_FACTURACION, factura)  
-        .then((res) =>{
-            console.log(res.data)    
-            console.log('La factura fue creada') 
-        }) 
-        .catch((error)=>{
-            console.error(error)
-        }) 
-    }
-    else{
-        console.log('No entro al if') 
-        console.log(response) 
-    }
 })
 
 let wompi = []
