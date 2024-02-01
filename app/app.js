@@ -73,6 +73,7 @@ let DataBerry = []
 
 //Api para nidum y traer los datos que devuelve wompi 
 app.post('/api/res/nidum', async(req, res)=>{
+    //Respuesta de la api 
     const response =  req.body
     const respuesta = 
         {
@@ -83,96 +84,120 @@ app.post('/api/res/nidum', async(req, res)=>{
             status: response.status, 
             checksum: response.checksum, 
         }
-    
+
     wompi.push(respuesta) 
     res.sendStatus(200)
+
+    //Confirmacion de la respuesta del cheksum 
+
+    let id = response.data.transaction.id 
+    let status = response.data.transaction.status
+    let amount_in_cents = response.data.transaction.amount_in_cents 
+    let timestamp = response.timestamp  
+    let secret = process.env.EVENT  
+   
+    const parametros = id + status + amount_in_cents + timestamp + secret;
+
+    //Encriptacion del cheksum 
+    const checksum = sha(parametros) 
+
+    //Validacion para facturacion 
+    if(response.signature.checksum == checksum){
+         
+        if(response.data.transaction.status === 'APPROVED'){
     
-    if(response.data.transaction.status === 'APPROVED'){
-
-        const Ref = response.data.transaction.reference 
-
-        URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"` 
-
-        URL_FACTURACION = "https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/Remision" 
-
-        await axios.get(URL_BERRY_GET)
-        .then((res)=>{
-            DataBerry = res.data  
-        })
-        .catch((error) => console.error(error)) 
-
-        let Product = [] 
-        let productos = [] 
-        let Fecha = [] 
-        let ID = 0
-        let Total = [] 
-        let Direccion = [] 
-
-        productos = JSON.parse(DataBerry[0].Productos)
-
-        console.log(productos) 
-
-        DataBerry.forEach(datos =>{
-            ID = datos.ID1  
-            Fecha =  datos.Fecha
-            Total = datos.Total 
-            Direccion = datos.Direccion
-        })
-
-
-        productos.forEach(datos =>{
-            const product = {
-                Producto : datos['id'],  
-                Cantidad: datos['quantity'], 
-                Precio: datos['price'],  
-                IVA: 0, 
-                Total: datos.quantity * datos.price, 
-                Utilidad: 0, 
-                Cargo_por_venta: 0, 
-                Asesor: "1889220000132110360"
+            const Ref = response.data.transaction.reference 
+            
+            //URL para la busqueda de los productos en zoho 
+            URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"` 
+    
+            URL_FACTURACION = "https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/Remision" 
+    
+            //Traer los productos de berry 
+            await axios.get(URL_BERRY_GET)
+            .then((res)=>{
+                DataBerry = res.data  
+            })
+            .catch((error) => console.error(error)) 
+    
+            let Product = [] 
+            let productos = [] 
+            let Fecha = [] 
+            let ID = 0
+            let Total = [] 
+            let Direccion = [] 
+    
+            productos = JSON.parse(DataBerry[0].Productos)
+    
+            console.log(productos) 
+    
+            DataBerry.forEach(datos =>{
+                ID = datos.ID1  
+                Fecha =  datos.Fecha
+                Total = datos.Total 
+                Direccion = datos.Direccion
+            })
+    
+    
+            productos.forEach(datos =>{
+                const product = {
+                    Producto : datos['id'],  
+                    Cantidad: datos['quantity'], 
+                    Precio: datos['price'],  
+                    IVA: 0, 
+                    Total: datos.quantity * datos.price, 
+                    Utilidad: 0, 
+                    Cargo_por_venta: 0, 
+                    Asesor: "1889220000132110360"
+                }
+    
+                Product.push(product)  
+            })
+    
+            const factura = {
+                Cliente: ID, 
+                Zona : "1889220000130974457", 
+                Tipo_Factura: "Contado", 
+                Aseso: "1889220000132110360", 
+                Financieras : "1889220000132747937", 
+                Bodega: "1889220000131977652", 
+                Redes2: "No", 
+                Fecha: Fecha, 
+                Vendedor: "1889220000131684707", 
+                Subtotal: Total,
+                Total: Total,
+                Iva_Total : 0, 
+                RT_Pago_Digital: 0, 
+                Otras_Deducciones: 0, 
+                Observacion: `${Direccion}`,  
+                Cargo_por_ventas: 0, 
+                Rete_Iva: 0, 
+                Rete_Fuente: 0, 
+                Rete_Ica: 0, 
+                Envio : 0,
+                Cuenta: "1889220000132525460",
+                Item: Product
             }
-
-            Product.push(product)  
-        })
-
-        const factura = {
-            Cliente: ID, 
-            Zona : "1889220000130974457", 
-            Tipo_Factura: "Contado", 
-            Aseso: "1889220000132110360", 
-            Financieras : "1889220000132747937", 
-            Bodega: "1889220000131977652", 
-            Redes2: "No", 
-            Fecha: Fecha, 
-            Vendedor: "1889220000131684707", 
-            Subtotal: Total,
-            Total: Total,
-            Iva_Total : 0, 
-            RT_Pago_Digital: 0, 
-            Otras_Deducciones: 0, 
-            Observacion: `${Direccion}`,  
-            Cargo_por_ventas: 0, 
-            Rete_Iva: 0, 
-            Rete_Fuente: 0, 
-            Rete_Ica: 0, 
-            Envio : 0,
-            Cuenta: "1889220000132525460",
-            Item: Product
+    
+            console.log(factura) 
+            //Creacion de la factura 
+            axios.post(URL_FACTURACION, factura)  
+            .then((res) =>{
+                console.log('La Factura fue creada correctamente',res.data)     
+            }) 
+            .catch((error)=>{
+                console.error(error)
+            }) 
         }
-
-        console.log(factura) 
-        axios.post(URL_FACTURACION, factura)  
-        .then((res) =>{
-            console.log('La Factura fue creada correctamente',res.data)     
-        }) 
-        .catch((error)=>{
-            console.error(error)
-        }) 
+        else{
+            console.log(response.data) 
+            console.log('La factura no fue creada')
+        }
     }
     else{
-        console.log(response.data) 
-    
+        console.log('Ocurrio un problema de seguridad') 
     }
+    
 })
 
 //Escuchar el puerto en el que se van a ejecutar los datos
