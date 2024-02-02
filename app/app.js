@@ -1,9 +1,11 @@
 //modulos requeridos 
-
-const express = require('express')
+const express = require('express'); 
 const sha = require('js-sha256').sha256; 
-const axios = require('axios') 
-const cors = require('cors') 
+const axios = require('axios');  
+const cors = require('cors');  
+const assignChecksum = require('./cheksum');
+
+//importacion de modulos 
 
 var fechaActual = new Date();
 
@@ -87,22 +89,12 @@ app.post('/api/res/nidum', async(req, res)=>{
 
     wompi.push(respuesta) 
     res.sendStatus(200)
-
-    //Confirmacion de la respuesta del cheksum 
-
-    let id = response.data.transaction.id 
-    let status = response.data.transaction.status
-    let amount_in_cents = response.data.transaction.amount_in_cents 
-    let timestamp = response.timestamp  
-    let secret = process.env.EVENT  
-   
-    const parametros = id + status + amount_in_cents + timestamp + secret;
-
-    //Encriptacion del cheksum 
-    const checksum = sha(parametros) 
+    
+    //llamado a la funcion de validacion de cheksum 
+    let checksum = assignChecksum(response)  
 
     //Validacion para facturacion 
-    if(response.signature.checksum == checksum){
+    if(response.signature.checksum == await checksum){
          
         if(response.data.transaction.status === 'APPROVED'){
     
@@ -121,15 +113,13 @@ app.post('/api/res/nidum', async(req, res)=>{
             .catch((error) => console.error(error)) 
     
             let Product = [] 
-            let productos = [] 
+            let productos = []  
             let Fecha = [] 
             let ID = 0
             let Total = [] 
             let Direccion = [] 
     
             productos = JSON.parse(DataBerry[0].Productos)
-    
-            console.log(productos) 
     
             DataBerry.forEach(datos =>{
                 ID = datos.ID1  
@@ -180,6 +170,8 @@ app.post('/api/res/nidum', async(req, res)=>{
             }
     
             console.log(factura) 
+
+            console.log('Entro al if') 
             //Creacion de la factura 
             axios.post(URL_FACTURACION, factura)  
             .then((res) =>{
