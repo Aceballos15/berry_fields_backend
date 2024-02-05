@@ -159,7 +159,7 @@ app.post('/api/res/nidum', async(req, res)=>{
                 Iva_Total : 0, 
                 RT_Pago_Digital: 0, 
                 Otras_Deducciones: 0, 
-                Observacion: `${Direccion}`,  
+                Observacion: `Enviar a: ${Direccion}`,
                 Cargo_por_ventas: 0, 
                 Rete_Iva: 0, 
                 Rete_Fuente: 0, 
