@@ -192,8 +192,10 @@ app.post('/api/res/nidum', async(req, res)=>{
     
 })
 
+
+
 //Escuchar el puerto en el que se van a ejecutar los datos
-const port = process.env.port || 4000; 
+const port = process.env.PORT || 4000; 
 
 app.listen(port, ()=> console.log(`Escuchando el puerto ${port}`))
 
