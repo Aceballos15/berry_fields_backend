@@ -1,6 +1,7 @@
 const crypto = require('crypto'); 
 const sha256 = require('js-sha256'); 
 
+// principal función checksum 
 const assignChecksum = async(response)=>{ 
 
     try{

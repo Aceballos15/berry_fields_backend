@@ -42,9 +42,7 @@ app.post('/api/Signature', (req, res)=>{
         const amount = dsData.amount * 100; 
         const params = reference + amount + currency + key;  
         const public_key = process.env.PUBLIC_KEY; 
-
-        console.log(params)
-        
+     
         //utilizar sha256 para encriptar los datos y hacer la signature 
         const signature = sha(params)
         
@@ -91,13 +89,15 @@ app.post('/api/res/nidum', async(req, res)=>{
     res.sendStatus(200)
     
     //llamado a la funcion de validacion de cheksum 
-    let checksum = assignChecksum(response)  
+    let checksum = await assignChecksum(response)  
 
     //Validacion para facturacion 
-    if(response.signature.checksum == await checksum){
-         
+    if(response.signature.checksum == checksum){
+
+        console.log(response.data)
+
         if(response.data.transaction.status === 'APPROVED'){
-    
+
             const Ref = response.data.transaction.reference 
             
             //URL para la busqueda de los productos en zoho 
@@ -187,7 +187,7 @@ app.post('/api/res/nidum', async(req, res)=>{
         }
     }
     else{
-        console.log('Ocurrio un problema de seguridad') 
+        console.log('Ocurrio un problema de seguridad...') 
     }
     
 })
