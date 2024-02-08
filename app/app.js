@@ -89,9 +89,9 @@ app.post('/api/res/nidum', async(req, res)=>{
     wompi.push(respuesta) 
 
     //llamado a la funcion de validacion de cheksum 
-    const checksum = await assignChecksum(response.data)  
+    const checksum = await assignChecksum(response)
     
-    console.log(`Checksum nidum: ${console.log(response)}`)
+    console.log(`Checksum nidum: ${console.log(response.data)}`)
 
     console.log(`Checksum Moncho: ${checksum}`)
 
