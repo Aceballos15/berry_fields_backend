@@ -91,7 +91,7 @@ app.post('/api/res/nidum', async(req, res)=>{
     //llamado a la funcion de validacion de cheksum 
     const checksum = await assignChecksum(response)  
     
-    console.log(`Checksum nidum: ${response.data}` )
+    console.log(`Checksum nidum: ${response.data[0]}` )
 
     console.log(`Checksum Moncho: ${checksum}`)
 
