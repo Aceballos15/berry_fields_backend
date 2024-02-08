@@ -75,7 +75,7 @@ let DataBerry = []
 //Api para nidum y traer los datos que devuelve wompi 
 app.post('/api/res/nidum', async(req, res)=>{
     //Respuesta de la api 
-    const response =  req.body
+    const response =  JSON.stringify(req.body, null, 4); 
     const respuesta = 
         {
             amount_in_cents: response.amount_in_cents, 
@@ -91,7 +91,7 @@ app.post('/api/res/nidum', async(req, res)=>{
     //llamado a la funcion de validacion de cheksum 
     const checksum = await assignChecksum(response)  
     
-    console.log(`Checksum nidum: ${console.log(JSON.stringify(response, null, 4))}` )
+    console.log(`Checksum nidum: ${console.log(response.data.signature)}` )
 
     console.log(`Checksum Moncho: ${checksum}`)
 
