@@ -10,6 +10,8 @@ const assignChecksum = async(response)=>{
         const params = new Map(); 
         const secret = process.env.EVENT; 
 
+        console.log(`Secret_event: ${secret}`); 
+        
         //Se agrega en un mapa para hacer el recorrido dentro de el mismo 
 
         params.set('transaction.id', response.data.transaction.id)
