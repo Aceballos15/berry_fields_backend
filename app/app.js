@@ -48,12 +48,12 @@ app.post('/api/Signature', (req, res)=>{
         
         const data = [
             {
-                key : key, 
+                key : process.env.KEY, 
                 currency : currency,
                 reference : reference,
                 amount: amount, 
                 signature : signature,
-                public_key:public_key
+                public_key: process.env.PUBLIC_KEY
             }
         ]
     
@@ -90,11 +90,11 @@ app.post('/api/res/nidum', async(req, res)=>{
     
     //llamado a la funcion de validacion de cheksum 
     let checksum = await assignChecksum(response)  
-
+    
+    console.log(response.signature)
+    
     //Validacion para facturacion 
     if(response.signature.checksum == checksum){
-
-        console.log(response.data)
 
         if(response.data.transaction.status === 'APPROVED'){
 
