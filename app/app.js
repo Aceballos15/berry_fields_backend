@@ -91,16 +91,16 @@ app.post('/api/res/nidum', async(req, res)=>{
     //llamado a la funcion de validacion de cheksum 
     const checksum = await assignChecksum(response)  
     
-    console.log(`Checksum nidum: ${response.data[0]}` )
+    console.log(`Checksum nidum: ${console.log(JSON.stringify(response, null, 4))}` )
 
     console.log(`Checksum Moncho: ${checksum}`)
 
     //Validacion para facturacion 
-    if(response.data[0].signature.checksum === checksum){
+    if(response.data.signature.checksum === checksum){
 
-        if(response.data[0].transaction.status === 'APPROVED'){
+        if(response.data.transaction.status === 'APPROVED'){
 
-            const Ref = response.data[0].transaction.reference 
+            const Ref = response.data.transaction.reference 
             
             //URL para la busqueda de los productos en zoho 
             URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"` 
