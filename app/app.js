@@ -57,7 +57,6 @@ app.post('/api/Signature', (req, res)=>{
             }
         ]
         
-        console.log(data) 
     
         DATA.push(data) 
         res.status(200).send(data)
@@ -91,7 +90,7 @@ app.post('/api/res/nidum', async(req, res)=>{
     //llamado a la funcion de validacion de cheksum 
     const checksum = await assignChecksum(response)
     
-    console.log(`Checksum nidum: ${console.log(response)}`)
+    console.log(`Checksum nidum: ${console.log(response.signature)}`)
 
     console.log(`Checksum Moncho: ${checksum}`)
 
