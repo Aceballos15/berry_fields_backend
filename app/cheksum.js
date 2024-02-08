@@ -10,8 +10,8 @@ const assignChecksum = async(response)=>{
         const params = new Map(); 
         const secret = process.env.EVENT; 
 
-        console.log(`Secret_event: ${secret}`); 
-        
+        console.log(`Secret_event ${process.env.EVENT}`); 
+
         //Se agrega en un mapa para hacer el recorrido dentro de el mismo 
 
         params.set('transaction.id', response.data.transaction.id)
@@ -31,7 +31,7 @@ const assignChecksum = async(response)=>{
         //Se termina de concatenar la cadena 
 
         concatenatedString += response.timestamp; 
-        concatenatedString += secret; 
+        concatenatedString += process.env.EVENT; 
 
         //Se encriptan los datos 
 
