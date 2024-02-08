@@ -90,9 +90,6 @@ app.post('/api/res/nidum', async(req, res)=>{
     //llamado a la funcion de validacion de cheksum 
     const checksum = await assignChecksum(response)
     
-    console.log(`Checksum nidum: ${console.log(response.signature.checksum)}`)
-
-    console.log(`Checksum Moncho: ${checksum}`)
 
     //Validacion para facturacion 
     if(response.signature.checksum === checksum){
@@ -144,7 +141,10 @@ app.post('/api/res/nidum', async(req, res)=>{
     
                 Product.push(product)  
             })
-    
+            
+            // Informar Creación de factura 
+            console.log("Generating invoice..."); 
+
             const factura = {
                 Cliente: ID, 
                 Zona : "1889220000130974457", 
@@ -180,7 +180,7 @@ app.post('/api/res/nidum', async(req, res)=>{
         }
         else{
             console.log(response.data) 
-            console.log('La factura no fue creada')
+            console.log('No Aproved')
         }
     }
     else{

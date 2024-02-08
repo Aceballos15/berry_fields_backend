@@ -8,9 +8,6 @@ const assignChecksum = async(response)=>{
         //Se trae las propiedades de la respuesta de wompi 
         const properties = response.signature.properties; 
         const params = new Map(); 
-        const secret = process.env.EVENT; 
-
-        console.log(`Secret_event ${process.env.EVENT}`); 
 
         //Se agrega en un mapa para hacer el recorrido dentro de el mismo 
 
@@ -24,7 +21,6 @@ const assignChecksum = async(response)=>{
 
         for(let i = 0; i<properties.length; i++){
             const property = properties[i]; 
-            console.log(property) 
             concatenatedString += params.get(property) 
         }
 
@@ -40,7 +36,7 @@ const assignChecksum = async(response)=>{
 
     }
     catch(error){
-        console.error('Error al general chesum', error)
+        console.error('Error al generar chesum', error)
     }
 
 }
