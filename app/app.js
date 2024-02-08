@@ -38,7 +38,7 @@ app.post('/api/Signature', (req, res)=>{
         //Datos obligatorios de wompi 
         const key = process.env.KEY; 
         const currency = "COP";
-        const reference = `bfs-${number} ${fechaFormateada} ${horaFormateada} ${dsData.ID}`  
+        const reference = `bfs-${number}-${fechaFormateada}-${horaFormateada}-${dsData.ID}`  
         const amount = dsData.amount * 100; 
         const params = reference + amount + currency + key;  
         const public_key = process.env.PUBLIC_KEY; 
@@ -56,10 +56,11 @@ app.post('/api/Signature', (req, res)=>{
                 public_key: process.env.PUBLIC_KEY
             }
         ]
+        
+        console.log(data) 
     
         DATA.push(data) 
         res.status(200).send(data)
-        console.log(DATA) 
     }
     catch(error){
         console.error(error) 
@@ -86,13 +87,12 @@ app.post('/api/res/nidum', async(req, res)=>{
         }
 
     wompi.push(respuesta) 
-    res.sendStatus(200)
-    
+
     //llamado a la funcion de validacion de cheksum 
     let checksum = await assignChecksum(response)  
     
     console.log(response.signature)
-    
+
     //Validacion para facturacion 
     if(response.signature.checksum == checksum){
 
@@ -168,10 +168,6 @@ app.post('/api/res/nidum', async(req, res)=>{
                 Cuenta: "1889220000132525460",
                 Item: Product
             }
-    
-            console.log(factura) 
-
-            console.log('Entro al if') 
             //Creacion de la factura 
             axios.post(URL_FACTURACION, factura)  
             .then((res) =>{
