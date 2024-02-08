@@ -75,7 +75,7 @@ let DataBerry = []
 //Api para nidum y traer los datos que devuelve wompi 
 app.post('/api/res/nidum', async(req, res)=>{
     //Respuesta de la api 
-    const response =  JSON.stringify(req.body, null, 4); 
+    const response =  req.body; 
     const respuesta = 
         {
             amount_in_cents: response.amount_in_cents, 
