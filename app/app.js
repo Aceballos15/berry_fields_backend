@@ -90,6 +90,7 @@ app.post('/api/res/nidum', async(req, res)=>{
     //llamado a la funcion de validacion de cheksum 
     const checksum = await assignChecksum(response)
     
+    console.log(JSON.stringify(response))
 
     //Validacion para facturacion 
     if(response.signature.checksum === checksum){
