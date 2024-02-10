@@ -112,7 +112,8 @@ app.post("/api/res/nidum", async (req, res) => {
         Pedido = res.data;
       });
 
-      if(Pedido[0].length > 0){
+      if(Pedido.length > 0){
+        
             URL_PATCH = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report/${Pedido[0].ID}`;
             const Estado = {
               Estado: Status,
