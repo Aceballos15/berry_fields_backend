@@ -126,6 +126,7 @@ app.post("/api/res/nidum", async (req, res) => {
                 console.log(res.statusCode, `Update order status ${Status}`)
               );
       }
+      res.status(200); 
     } catch (err) {
       console.error("Patch status faild", err);
     }
