@@ -112,18 +112,19 @@ app.post("/api/res/nidum", async (req, res) => {
         Pedido = res.data;
       });
 
-      URL_PATCH = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report/${Pedido[0].ID}`;
-
-      const Estado = {
-        Estado: Status,
-      };
-
-      axios
-        .patch(URL_PATCH, Estado)
-        .then(
-          (res) => res,
-          console.log(res.statusCode, `Update order status ${Status}`)
-        );
+      if(Pedido[0].length > 0){
+            URL_PATCH = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report/${Pedido[0].ID}`;
+            const Estado = {
+              Estado: Status,
+            };
+      
+            axios
+              .patch(URL_PATCH, Estado)
+              .then(
+                (res) => res,
+                console.log(res.statusCode, `Update order status ${Status}`)
+              );
+      }
     } catch (err) {
       console.error("Patch status faild", err);
     }
