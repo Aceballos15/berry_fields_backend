@@ -208,7 +208,6 @@ app.post("/api/res/nidum", async (req, res) => {
           Item: Product,
         };
         //Creacion de la factura
-        console.log(factura); 
         axios
           .post(URL_FACTURACION, factura)
           .then((res) => {
