@@ -151,7 +151,7 @@ app.post("/api/res/nidum", async (req, res) => {
       let Product = [];
       let productos = [];
       let Fecha = [];
-      let ID = 0;
+      var id_client = "";
       let Total = [];
       let Direccion = [];
 
@@ -159,7 +159,7 @@ app.post("/api/res/nidum", async (req, res) => {
         productos = JSON.parse(DataBerry[0].Productos);
 
         DataBerry.forEach((datos) => {
-          ID = datos.ID1;
+          id_client = datos.ID1;
           Fecha = datos.Fecha;
           Total = datos.Total;
           Direccion = datos.Direccion;
@@ -184,7 +184,7 @@ app.post("/api/res/nidum", async (req, res) => {
         console.log("Generating invoice...");
 
         const factura = {
-          Cliente: parseInt(ID),
+          Cliente: parseInt(id_client),
           Zona: "1889220000130974457",
           Tipo_Factura: "Contado",
           Aseso: "1889220000132110360",
