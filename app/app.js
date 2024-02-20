@@ -184,7 +184,7 @@ app.post("/api/res/nidum", async (req, res) => {
         console.log("Generating invoice...");
 
         const factura = {
-          Cliente: ID,
+          Cliente: parseInt(ID),
           Zona: "1889220000130974457",
           Tipo_Factura: "Contado",
           Aseso: "1889220000132110360",
