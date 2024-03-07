@@ -4,30 +4,14 @@ const sha = require("js-sha256").sha256;
 const axios = require("axios");
 const cors = require("cors");
 const assignChecksum = require("./cheksum");
+const async = require("async");
+require("dotenv").config();
 
-//importacion de modulos
-
-var fechaActual = new Date();
-
-// Obtener el año, mes, día, hora, minutos y segundos
-var año = fechaActual.getFullYear();
-var mes = fechaActual.getMonth() + 1; // Los meses en JavaScript van de 0 a 11, por lo que se suma 1.
-var dia = fechaActual.getDate();
-var hora = fechaActual.getHours();
-var minutos = fechaActual.getMinutes();
-var segundos = fechaActual.getSeconds();
-// Formatear la fecha y la hora según tus necesidades
-var fechaFormateada =
-  año + "-" + (mes < 10 ? "0" : "") + mes + "-" + (dia < 10 ? "0" : "") + dia;
-var horaFormateada =
-  (hora < 10 ? "0" : "") +
-  hora +
-  ":" +
-  (minutos < 10 ? "0" : "") +
-  minutos +
-  ":" +
-  (segundos < 10 ? "0" : "") +
-  segundos;
+// Function to que order
+const queue = async.queue(async (orderData) => {
+  console.log("Procesing payment in que...");
+  process_payment(orderData);
+}, 1);
 
 //asignacion de express a la app
 const app = express();
@@ -47,10 +31,9 @@ app.post("/api/Signature", (req, res) => {
     //Datos obligatorios de wompi
     const key = process.env.KEY;
     const currency = "COP";
-    const reference = `bfs-${number}-${fechaFormateada}-${horaFormateada}-${dsData.ID}`;
+    const reference = `bfs-${number}-${dsData.Fecha}-${dsData.ID}`;
     const amount = dsData.amount * 100;
     const params = reference + amount + currency + key;
-    const public_key = process.env.PUBLIC_KEY;
 
     //utilizar sha256 para encriptar los datos y hacer la signature
     const signature = sha(params);
@@ -80,8 +63,18 @@ let DataBerry = [];
 
 //Api para nidum y traer los datos que devuelve wompi
 app.post("/api/res/nidum", async (req, res) => {
+  try {
+    queue.push(req.body);
+    res.status(200).send("Payment Received");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+});
+
+const process_payment = async (data) => {
   //Respuesta de la api
-  const response = req.body;
+  const response = data;
   const respuesta = {
     amount_in_cents: response.amount_in_cents,
     reference: response.reference,
@@ -112,21 +105,16 @@ app.post("/api/res/nidum", async (req, res) => {
         Pedido = res.data;
       });
 
-      if(Pedido.length > 0){
-        
-            URL_PATCH = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report/${Pedido[0].ID}`;
-            const Estado = {
-              Estado: Status,
-            };
-      
-            axios
-              .patch(URL_PATCH, Estado)
-              .then(
-                (res) => res,
-                console.log(res.statusCode, `Update order status ${Status}`)
-              );
+      if (Pedido.length > 0) {
+        URL_PATCH = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report/${Pedido[0].ID}`;
+        const Estado = {
+          Estado: Status,
+        };
+
+        await axios.patch(URL_PATCH, Estado).then((res) => {
+          console.log(`status update to ${Status}`);
+        });
       }
-      res.status(200).send("Pay received"); 
     } catch (err) {
       console.error("Patch status faild", err);
     }
@@ -148,12 +136,12 @@ app.post("/api/res/nidum", async (req, res) => {
         })
         .catch((error) => console.error(error));
 
-      let Product = [];
-      let productos = [];
-      let Fecha = [];
-      var id_client = "";
-      let Total = [];
-      let Direccion = [];
+        let Product = [];
+        let productos = [];
+        let Fecha = [];
+        var id_client = "";
+        let Total = [];
+        let Direccion = [];
 
       if (DataBerry.length > 0) {
         productos = JSON.parse(DataBerry[0].Productos);
@@ -182,7 +170,7 @@ app.post("/api/res/nidum", async (req, res) => {
 
         // Informar Creación de factura
         console.log("Generating invoice...");
-
+        
         const factura = {
           Cliente: id_client,
           Zona: "1889220000130974457",
@@ -208,11 +196,11 @@ app.post("/api/res/nidum", async (req, res) => {
           Item: Product,
         };
         //Creacion de la factura
-        console.log(factura); 
-        axios
+        console.log(factura);
+        await axios
           .post(URL_FACTURACION, factura)
           .then((res) => {
-            console.log("La Factura fue creada correctamente", res.data);
+            console.log("La Factura fue creada correctamente", res.status);
           })
           .catch((error) => {
             console.error(error);
@@ -227,9 +215,9 @@ app.post("/api/res/nidum", async (req, res) => {
   } else {
     console.log("Ocurrio un problema de seguridad...");
   }
-});
+};
 
 //Escuchar el puerto en el que se van a ejecutar los datos
-const port = process.env.PORT || 4000;
+const port = process.env.PORT;
 
 app.listen(port, () => console.log(`Escuchando el puerto ${port}`));
