@@ -153,20 +153,64 @@ const process_payment = async (data) => {
           Direccion = datos.Direccion;
         });
 
+        const gramaje = []; 
+         
+        //Recorrido a Productos para desestructurar los gramos de los productos 
         productos.forEach((datos) => {
+          const gramos = datos.gramos;    
+          
+          //For para encontrar cada uno de los gramos del producto 
+          for(let contador =0; datos.gramos.length; ){
+            const new_gramos = gramos[contador].Gramos; 
+            const new_id = gramos[contador].ID_Product; 
+            const price = (datos.price / gramos.length);  
+            const quantity = datos.quantity; 
+
+            contador ++; 
+
+            //Agregar los gramos y el id de cada producto 
+            const data = {
+              gramos : new_gramos,
+              ID: new_id,  
+              price: price, 
+              Total : price * quantity, 
+              Quantity : quantity
+            }
+
+            let list_products = gramaje.filter(item => item.ID === data.ID);
+            let index_product = gramaje.findIndex(item => item.ID === data.ID);
+            
+            if(list_products.length === 0) {
+              gramaje.push(data);
+            }else{
+
+              list_products[0].gramos += data.gramos;
+              list_products[0].Total += data.price * data.Quantity;   
+              gramaje[index_product] = list_products[0]; 
+              
+            }
+            if(contador == datos.gramos.length){  
+              break
+            }
+          }
+        });
+        
+        gramaje.forEach(element=>{
           const product = {
-            Producto: datos["id"],
-            Cantidad: datos["quantity"],
-            Precio: datos["price"],
+            Producto: element.ID, 
+            Cantidad: element.Quantity, 
+            // Gramos : element.gramos, 
+            Precio: element.price, 
             IVA: 0,
-            Total: datos.quantity * datos.price,
+            Total: element.Total, 
             Utilidad: 0,
             Cargo_por_venta: 0,
             Asesor: "1889220000132110360",
           };
+  
+          Product.push(product); 
 
-          Product.push(product);
-        });
+        })
 
         // Informar Creación de factura
         console.log("Generating invoice...");
