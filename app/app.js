@@ -31,7 +31,7 @@ app.post("/api/Signature", (req, res) => {
     //Datos obligatorios de wompi
     const key = process.env.KEY;
     const currency = "COP";
-    const reference = `bfs-${number}-${dsData.Fecha}-${dsData.ID}`;
+    const reference = `bfs-${number}-${dsData.Fecha}-${dsData.ID}`; 
     const amount = dsData.amount * 100;
     const params = reference + amount + currency + key;
 
@@ -89,6 +89,8 @@ const process_payment = async (data) => {
   //llamado a la funcion de validacion de cheksum
   const checksum = await assignChecksum(response);
 
+  console.log(checksum); 
+
   console.log(JSON.stringify(response));
 
   //Validacion para facturacion
@@ -97,7 +99,7 @@ const process_payment = async (data) => {
     try {
       const Ref = response.data.transaction.reference;
 
-      URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"`;
+      URL_BERRY_GET =` https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"`;
 
       var Pedido = [];
 
@@ -123,7 +125,7 @@ const process_payment = async (data) => {
       const Ref = response.data.transaction.reference;
 
       //URL para la busqueda de los productos en zoho
-      URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"`;
+      URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"`; 
 
       URL_FACTURACION =
         "https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/Remision";
@@ -153,64 +155,71 @@ const process_payment = async (data) => {
           Direccion = datos.Direccion;
         });
 
-        const gramaje = []; 
-         
         //Recorrido a Productos para desestructurar los gramos de los productos 
         productos.forEach((datos) => {
-          const gramos = datos.gramos;    
-          
-          //For para encontrar cada uno de los gramos del producto 
-          for(let contador =0; datos.gramos.length; ){
-            const new_gramos = gramos[contador].Gramos; 
-            const new_id = gramos[contador].ID_Product; 
-            const price = (datos.price / gramos.length);  
-            const quantity = datos.quantity; 
-
-            contador ++; 
-
-            //Agregar los gramos y el id de cada producto 
-            const data = {
-              gramos : new_gramos,
-              ID: new_id,  
-              price: price, 
-              Total : price * quantity, 
-              Quantity : quantity
-            }
-
-            let list_products = gramaje.filter(item => item.ID === data.ID);
-            let index_product = gramaje.findIndex(item => item.ID === data.ID);
-            
-            if(list_products.length === 0) {
-              gramaje.push(data);
-            }else{
-
-              list_products[0].gramos += data.gramos;
-              list_products[0].Total += data.price * data.Quantity;   
-              gramaje[index_product] = list_products[0]; 
-              
-            }
-            if(contador == datos.gramos.length){  
-              break
-            }
-          }
-        });
         
-        gramaje.forEach(element=>{
-          const product = {
-            Producto: element.ID, 
-            Cantidad: element.Quantity, 
-            // Gramos : element.gramos, 
-            Precio: element.price, 
-            IVA: 0,
-            Total: element.Total, 
-            Utilidad: 0,
-            Cargo_por_venta: 0,
-            Asesor: "1889220000132110360",
-          };
+          const gramos = datos.gramos.length;
+          // console.log(gramos) 
+          
+          if(gramos>1){
+            for(let contador =0; datos.gramos.length; ){
   
-          Product.push(product); 
+              let grams_id  = datos.gramos[contador].ID_Product; 
+              
+              let grams = datos.gramos[contador].Gramos; 
+              
+              let price_product = (datos.price / grams) / gramos;
 
-        })
+              let total = (price_product * grams) * datos.quantity;
+    
+              const product = {
+                Producto: grams_id,  
+                Cantidad:grams,    
+                // Gramos : element.gramos, 
+                Precio: price_product,  
+                IVA: 0,
+                Total: total,    
+                Utilidad: 0,
+                Cargo_por_venta: 0,
+                Asesor: "1889220000132110360",
+              };
+
+              contador++; 
+      
+              Product.push(product); 
+
+              // console.log(product) 
+
+              if(contador == datos.gramos.length){
+                break
+              }
+            }
+
+          }else{
+        
+            let grams_id  = datos.gramos[0].ID_Product;
+            
+            let grams = datos.gramos[0].Gramos; 
+            
+            let price_product = datos.price / grams;  
+            let total = (price_product * grams) * datos.quantity;  
+  
+            const product = {
+              Producto: grams_id,  
+              Cantidad:grams,    
+              Precio: price_product,  
+              IVA: 0,
+              Total: total,    
+              Utilidad: 0,
+              Cargo_por_venta: 0,
+              Asesor: "1889220000132110360",
+            };
+    
+            Product.push(product); 
+
+          }
+          
+        });
 
         // Informar Creación de factura
         console.log("Generating invoice...");
@@ -263,5 +272,4 @@ const process_payment = async (data) => {
 
 //Escuchar el puerto en el que se van a ejecutar los datos
 const port = process.env.PORT;
-
-app.listen(port, () => console.log(`Escuchando el puerto ${port}`));
+`app.listen(port, () => console.log(Escuchando el puerto ${port}))`; 
