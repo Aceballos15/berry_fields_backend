@@ -201,7 +201,7 @@ const process_payment = async (data) => {
             
             let grams = datos.gramos[0].Gramos; 
             
-            let price_product = datos.price / grams;  
+            let price_product = (datos.price * datos.quantity) / grams;  
             let total = (price_product * grams) * datos.quantity;  
   
             const product = {
