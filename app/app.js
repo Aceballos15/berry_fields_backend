@@ -31,7 +31,7 @@ app.post("/api/Signature", (req, res) => {
     //Datos obligatorios de wompi
     const key = process.env.KEY;
     const currency = "COP";
-    const reference = `bfs-${number}-${dsData.Fecha}-${dsData.ID}`; 
+    const reference = `bfs-${number}-${dsData.Fecha}-${dsData.ID}`;
     const amount = dsData.amount * 100;
     const params = reference + amount + currency + key;
 
@@ -99,7 +99,7 @@ const process_payment = async (data) => {
     try {
       const Ref = response.data.transaction.reference;
 
-      URL_BERRY_GET =` https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"`;
+      URL_BERRY_GET = `https://nexyapp-f3a65a020e2a.herokuapp.com/zoho/v1/console/verificar_pedido_Report?where=Referencia=="${Ref}"`;
 
       var Pedido = [];
 
@@ -202,7 +202,7 @@ const process_payment = async (data) => {
             let grams = datos.gramos[0].Gramos; 
             
             let price_product = (datos.price * datos.quantity) / grams;  
-            let total = (price_product * grams) * datos.quantity;  
+            let total = price_product * grams;   
   
             const product = {
               Producto: grams_id,  
@@ -272,4 +272,5 @@ const process_payment = async (data) => {
 
 //Escuchar el puerto en el que se van a ejecutar los datos
 const port = process.env.PORT;
-app.listen(port, () => console.log(`Escuchando el puerto ${port}`)); 
+
+app.listen(port, () => console.log(`Escuchando el puerto ${port}`));
